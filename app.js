@@ -4,6 +4,27 @@ const images = {
   celebrate: "public/assets/vincent-celebrate.webp",
 };
 
+const voiceTracks = {
+  intro: "public/audio/vincent-intro.mp3",
+  rule: "public/audio/vincent-rule.mp3",
+  simpleExample: "public/audio/simple-example.mp3",
+  continuousExample: "public/audio/continuous-example.mp3",
+  choiceInstruction: "public/audio/choice-instruction.mp3",
+  choice1: "public/audio/choice-1.mp3",
+  choice2: "public/audio/choice-2.mp3",
+  choice3: "public/audio/choice-3.mp3",
+  choice4: "public/audio/choice-4.mp3",
+  sortInstruction: "public/audio/sort-instruction.mp3",
+  finalIntro: "public/audio/final-intro.mp3",
+  final1: "public/audio/final-1.mp3",
+  final2: "public/audio/final-2.mp3",
+  final3: "public/audio/final-3.mp3",
+  final4: "public/audio/final-4.mp3",
+  final5: "public/audio/final-5.mp3",
+  final6: "public/audio/final-6.mp3",
+  complete: "public/audio/vincent-complete.mp3",
+};
+
 const choiceQuestions = [
   {
     text: "Varya usually ___ her homework after school.",
@@ -11,7 +32,7 @@ const choiceQuestions = [
     options: ["does", "is doing"],
     answer: "does",
     tip: "Usually — это привычка. Нужен Present Simple: does.",
-    speech: "Varya usually does her homework after school.",
+    track: "choice1",
   },
   {
     text: "Look! Vincent ___ after a butterfly.",
@@ -19,7 +40,7 @@ const choiceQuestions = [
     options: ["runs", "is running"],
     answer: "is running",
     tip: "Look! — действие происходит прямо сейчас: is running.",
-    speech: "Look! Vincent is running after a butterfly.",
+    track: "choice2",
   },
   {
     text: "My dad ___ tea every morning.",
@@ -27,7 +48,7 @@ const choiceQuestions = [
     options: ["drinks", "is drinking"],
     answer: "drinks",
     tip: "Every morning — повторяющееся действие. Present Simple: drinks.",
-    speech: "My dad drinks tea every morning.",
+    track: "choice3",
   },
   {
     text: "Listen! The baby ___ right now.",
@@ -35,7 +56,7 @@ const choiceQuestions = [
     options: ["cries", "is crying"],
     answer: "is crying",
     tip: "Right now — прямо сейчас. Нужен Present Continuous: is crying.",
-    speech: "Listen! The baby is crying right now.",
+    track: "choice4",
   },
 ];
 
@@ -54,42 +75,42 @@ const finalQuestions = [
     clue: "every day",
     options: ["brush", "am brushing"],
     answer: "brush",
-    speech: "I brush my teeth every day.",
+    track: "final1",
   },
   {
     text: "Vincent ___ on the sofa now.",
     clue: "now",
     options: ["sleeps", "is sleeping"],
     answer: "is sleeping",
-    speech: "Vincent is sleeping on the sofa now.",
+    track: "final2",
   },
   {
     text: "She usually ___ to school at eight.",
     clue: "usually",
     options: ["goes", "is going"],
     answer: "goes",
-    speech: "She usually goes to school at eight.",
+    track: "final3",
   },
   {
     text: "We ___ English at the moment.",
     clue: "at the moment",
     options: ["learn", "are learning"],
     answer: "are learning",
-    speech: "We are learning English at the moment.",
+    track: "final4",
   },
   {
     text: "They ___ football on Sundays.",
     clue: "on Sundays",
     options: ["play", "are playing"],
     answer: "play",
-    speech: "They play football on Sundays.",
+    track: "final5",
   },
   {
     text: "Listen! Mum ___ on the phone.",
     clue: "Listen!",
     options: ["talks", "is talking"],
     answer: "is talking",
-    speech: "Listen! Mum is talking on the phone.",
+    track: "final6",
   },
 ];
 
@@ -114,7 +135,8 @@ const speechText = document.querySelector("#speech-text");
 const vincentImage = document.querySelector("#vincent-image");
 const trailSteps = [...document.querySelectorAll("#trail-steps li")];
 
-let currentSpeech = "Hello, Varya! Are you ready to learn English with me?";
+let currentTrack = "intro";
+let activeVoiceAudio;
 let audioContext;
 
 function storedBest() {
@@ -130,8 +152,8 @@ function updateScore(points = 0) {
   bestScoreElement.textContent = storedBest();
 }
 
-function setVincent(mode, message, speech = message) {
-  currentSpeech = speech;
+function setVincent(mode, message, track = currentTrack) {
+  currentTrack = track;
   speechText.textContent = message;
   const next = images[mode];
   if (vincentImage.getAttribute("src") === next) return;
@@ -170,17 +192,14 @@ function tone(kind = "click") {
   });
 }
 
-function speak(text = currentSpeech) {
-  if (!state.soundOn || !("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-GB";
-  utterance.rate = 0.88;
-  utterance.pitch = 1.04;
-  const voices = window.speechSynthesis.getVoices();
-  const preferred = voices.find((voice) => /^en-GB/.test(voice.lang)) || voices.find((voice) => /^en/.test(voice.lang));
-  if (preferred) utterance.voice = preferred;
-  window.speechSynthesis.speak(utterance);
+function speak(track = currentTrack) {
+  if (!state.soundOn || !voiceTracks[track]) return;
+  if (activeVoiceAudio) {
+    activeVoiceAudio.pause();
+    activeVoiceAudio.currentTime = 0;
+  }
+  activeVoiceAudio = new Audio(voiceTracks[track]);
+  activeVoiceAudio.play().catch(() => {});
 }
 
 function highlightClue(text, clue) {
@@ -205,7 +224,7 @@ function burstConfetti(amount = 24) {
 function renderIntro() {
   state.screen = 0;
   setTrail(0);
-  setVincent("teacher", "Привет, Варя! Сегодня мы приручим два английских времени.", "Hello, Varya! Today we will learn two English tenses.");
+  setVincent("teacher", "Привет, Варя! Сегодня мы приручим два английских времени.", "intro");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">⏱️</span> 12 минут · 3 игровых этапа</div>
     <h1>Как отличить «обычно» от «прямо сейчас»?</h1>
@@ -222,7 +241,7 @@ function renderIntro() {
 function renderRules() {
   state.screen = 1;
   setTrail(1);
-  setVincent("teacher", "Секрет простой: ищи слово-подсказку и спроси себя — это привычка или действие сейчас?", "Find the clue. Is it a habit, or is it happening now?");
+  setVincent("teacher", "Секрет простой: ищи слово-подсказку и спроси себя — это привычка или действие сейчас?", "rule");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🔎</span> Винни объясняет</div>
     <h2>Два времени — две суперсилы</h2>
@@ -232,14 +251,14 @@ function renderRules() {
         <p>Привычки и то, что повторяется.</p>
         <div class="formula">I play · She plays</div>
         <div class="signal-words">usually · often · every day</div>
-        <div class="example-line"><button class="tiny-audio" type="button" data-speak="I walk to school every day." aria-label="Послушать пример">▶</button> I walk to school every day.</div>
+        <div class="example-line"><button class="tiny-audio" type="button" data-track="simpleExample" aria-label="Послушать пример">▶</button> I walk to school every day.</div>
       </article>
       <article class="rule-sheet is-now">
         <h3>⚡ Present Continuous</h3>
         <p>То, что происходит прямо сейчас.</p>
         <div class="formula">am / is / are + ing</div>
         <div class="signal-words">now · Look! · at the moment</div>
-        <div class="example-line"><button class="tiny-audio" type="button" data-speak="I am walking to school now." aria-label="Послушать пример">▶</button> I am walking to school now.</div>
+        <div class="example-line"><button class="tiny-audio" type="button" data-track="continuousExample" aria-label="Послушать пример">▶</button> I am walking to school now.</div>
       </article>
     </div>
     <button class="primary-button" type="button" data-action="choice">Проверить суперсилу</button>
@@ -250,7 +269,7 @@ function renderChoice() {
   state.screen = 2;
   setTrail(2);
   const question = choiceQuestions[state.choiceIndex];
-  setVincent("thinking", "Найди слово-подсказку и выбери правильную форму.", question.speech);
+  setVincent("thinking", "Найди слово-подсказку и выбери правильную форму.", "choiceInstruction");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🎯</span> Быстрый выбор</div>
     <h2>Что подходит?</h2>
@@ -269,7 +288,7 @@ function renderSort() {
   state.screen = 3;
   setTrail(2);
   const card = sortCards[state.sortIndex];
-  setVincent("thinking", "Рассортируй слова-подсказки. Нажми на карточку, затем на правильный домик.", "Is it a habit, or is it happening now?");
+  setVincent("thinking", "Рассортируй слова-подсказки. Нажми на карточку, затем на правильный домик.", "sortInstruction");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🧺</span> Сортировка подсказок</div>
     <h2>Куда отправить фразу?</h2>
@@ -293,7 +312,7 @@ function renderFinal() {
   state.screen = 4;
   setTrail(3);
   const question = finalQuestions[state.finalIndex];
-  setVincent("thinking", "Финал! За каждый ответ здесь ты получишь целых 15 звёздных баллов.", question.speech);
+  setVincent("thinking", "Финал! За каждый ответ здесь ты получишь целых 15 звёздных баллов.", "finalIntro");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🏁</span> Финальное испытание</div>
     <h2>Собери идеальную серию</h2>
@@ -311,7 +330,7 @@ function renderFinal() {
 function renderComplete() {
   state.screen = 5;
   setTrail(4);
-  setVincent("celebrate", `Ура, Варя! ${state.score} баллов — ты отлично различаешь два времени!`, "Amazing work, Varya! You know Present Simple and Present Continuous!");
+  setVincent("celebrate", `Ура, Варя! ${state.score} баллов — ты отлично различаешь два времени!`, "complete");
   burstConfetti(70);
   tone("good");
   panel.innerHTML = `
@@ -357,7 +376,7 @@ function resolveChoice(button, isFinal = false) {
     state.streak = 0;
     feedback.className = "feedback bad";
     feedback.textContent = isFinal ? `Ещё попытка! Смотри на подсказку «${question.clue}».` : question.tip;
-    setVincent("thinking", `Почти! Слово «${question.clue}» подскажет нужное время.`, question.speech);
+    setVincent("thinking", `Почти! Слово «${question.clue}» подскажет нужное время.`, isFinal ? "finalIntro" : "choiceInstruction");
     tone("bad");
     return;
   }
@@ -372,7 +391,7 @@ function resolveChoice(button, isFinal = false) {
   feedback.className = "feedback good";
   feedback.textContent = "Верно! +" + (isFinal ? 15 : 10) + " баллов";
   tone("good");
-  speak(question.speech);
+  speak(question.track);
 
   window.setTimeout(() => {
     if (index + 1 < questions.length) {
@@ -391,9 +410,9 @@ panel.addEventListener("click", (event) => {
   const target = event.target.closest("button");
   if (!target) return;
 
-  if (target.dataset.speak) {
+  if (target.dataset.track) {
     tone();
-    speak(target.dataset.speak);
+    speak(target.dataset.track);
     return;
   }
 
@@ -438,7 +457,7 @@ panel.addEventListener("click", (event) => {
   } else if (target.dataset.action === "replay") {
     resetGame();
   } else if (target.dataset.action === "hear-praise") {
-    speak("Amazing work, Varya! You know Present Simple and Present Continuous!");
+    speak("complete");
   }
 });
 
@@ -450,7 +469,10 @@ soundButton.addEventListener("click", () => {
   soundButton.setAttribute("aria-label", state.soundOn ? "Выключить звук" : "Включить звук");
   soundButton.querySelector("span").textContent = state.soundOn ? "🔊" : "🔇";
   if (state.soundOn) tone("good");
-  else window.speechSynthesis?.cancel();
+  else if (activeVoiceAudio) {
+    activeVoiceAudio.pause();
+    activeVoiceAudio.currentTime = 0;
+  }
 });
 
 document.querySelector("#reset-button").addEventListener("click", resetGame);
