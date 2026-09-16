@@ -224,7 +224,11 @@ function burstConfetti(amount = 24) {
 function renderIntro() {
   state.screen = 0;
   setTrail(0);
-  setVincent("teacher", "Привет, Варя! Сегодня мы приручим два английских времени.", "intro");
+  setVincent(
+    "teacher",
+    "Привет, Варя! Сегодня мы приручим два английских времени. Дальше я буду говорить по-английски — слушай внимательно и повторяй за мной!",
+    "intro",
+  );
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">⏱️</span> 12 минут · 3 игровых этапа</div>
     <h1>Как отличить «обычно» от «прямо сейчас»?</h1>
