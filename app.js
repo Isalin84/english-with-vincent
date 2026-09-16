@@ -31,7 +31,7 @@ const choiceQuestions = [
     clue: "usually",
     options: ["does", "is doing"],
     answer: "does",
-    tip: "Usually — это привычка. Нужен Present Simple: does.",
+    tip: "Usually — это привычное, повторяющееся действие. Нужен Present Simple: does.",
     track: "choice1",
   },
   {
