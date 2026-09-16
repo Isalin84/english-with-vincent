@@ -245,7 +245,7 @@ function renderIntro() {
 function renderRules() {
   state.screen = 1;
   setTrail(1);
-  setVincent("teacher", "Секрет простой: ищи слово-подсказку и спроси себя — это привычка или действие сейчас?", "rule");
+  setVincent("teacher", "Секрет простой: ищи слово-подсказку и спроси себя — это привычное действие или что-то, что происходит прямо сейчас?", "rule");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🔎</span> Винни объясняет</div>
     <h2>Два времени — две суперсилы</h2>
