@@ -248,7 +248,7 @@ function renderRules() {
   setVincent("teacher", "Секрет простой: ищи слово-подсказку и спроси себя — это привычное действие или что-то, что происходит прямо сейчас?", "rule");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🔎</span> Винни объясняет</div>
-    <h2>Два времени — две суперсилы</h2>
+    <h2>Учимся отличать</h2>
     <div class="rule-grid">
       <article class="rule-sheet">
         <h3>🔁 Present Simple</h3>
