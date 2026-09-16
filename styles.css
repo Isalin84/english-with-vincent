@@ -252,7 +252,9 @@ a:focus-visible {
   left: 24px;
   right: 24px;
   padding: 20px 22px 17px;
-  background: white;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   border: 3px solid var(--blue-dark);
   border-radius: 24px 24px 24px 6px;
   box-shadow: 8px 8px 0 rgba(16, 42, 104, 0.22);
@@ -265,7 +267,9 @@ a:focus-visible {
   bottom: -17px;
   width: 23px;
   height: 23px;
-  background: white;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   border-right: 3px solid var(--blue-dark);
   border-bottom: 3px solid var(--blue-dark);
   transform: skewY(38deg);
