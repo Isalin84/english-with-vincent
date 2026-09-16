@@ -340,7 +340,7 @@ function renderComplete() {
   panel.innerHTML = `
     <div class="result-badge"><div><span>🏅</span><b>Time Tamer</b></div></div>
     <h2>Времена приручены!</h2>
-    <p class="lead">Ты заработала <b>${state.score} из 190 баллов</b>. Главное правило: привычка — Present Simple, действие сейчас — Present Continuous.</p>
+    <p class="lead">Ты заработала <b>${state.score} из 190 баллов</b>. Главное правило: привычное или повторяющееся действие — Present Simple, действие, которое происходит прямо сейчас — Present Continuous.</p>
     <div class="mini-features">
       <span>🔁 habits</span>
       <span>⚡ happening now</span>
@@ -445,7 +445,7 @@ panel.addEventListener("click", (event) => {
     const card = sortCards[state.sortIndex];
     if (target.dataset.zone !== card.zone) {
       feedback.className = "feedback bad";
-      feedback.textContent = "Проверь: это привычка или происходит сейчас?";
+      feedback.textContent = "Проверь: это привычное действие или происходит сейчас?";
       tone("bad");
       return;
     }
