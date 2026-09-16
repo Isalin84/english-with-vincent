@@ -31,7 +31,7 @@ const choiceQuestions = [
     clue: "usually",
     options: ["does", "is doing"],
     answer: "does",
-    tip: "Usually — это привычное, повторяющееся действие. Нужен Present Simple: does.",
+    tip: "«Usually» значит «обычно». Действие повторяется, значит Present Simple: does.",
     track: "choice1",
   },
   {
@@ -39,7 +39,7 @@ const choiceQuestions = [
     clue: "Look!",
     options: ["runs", "is running"],
     answer: "is running",
-    tip: "Look! — действие происходит прямо сейчас: is running.",
+    tip: "«Look!» значит «Смотри!». Действие происходит прямо сейчас, значит Present Continuous: is running.",
     track: "choice2",
   },
   {
@@ -47,7 +47,7 @@ const choiceQuestions = [
     clue: "every morning",
     options: ["drinks", "is drinking"],
     answer: "drinks",
-    tip: "Every morning — повторяющееся действие. Present Simple: drinks.",
+    tip: "«Every morning» значит «каждое утро». Действие повторяется, значит Present Simple: drinks.",
     track: "choice3",
   },
   {
@@ -55,7 +55,7 @@ const choiceQuestions = [
     clue: "right now",
     options: ["cries", "is crying"],
     answer: "is crying",
-    tip: "Right now — прямо сейчас. Нужен Present Continuous: is crying.",
+    tip: "«Right now» значит «прямо сейчас». Действие происходит сейчас, значит Present Continuous: is crying.",
     track: "choice4",
   },
 ];
@@ -68,6 +68,20 @@ const sortCards = [
   { label: "often", zone: "simple" },
   { label: "Look!", zone: "continuous" },
 ];
+
+const clueTranslations = {
+  "usually": "обычно",
+  "often": "часто",
+  "every day": "каждый день",
+  "every morning": "каждое утро",
+  "every Saturday": "каждую субботу",
+  "on Sundays": "по воскресеньям",
+  "now": "сейчас",
+  "right now": "прямо сейчас",
+  "at the moment": "в эту минуту",
+  "Look!": "Смотри!",
+  "Listen!": "Слушай!",
+};
 
 const finalQuestions = [
   {
@@ -206,6 +220,10 @@ function highlightClue(text, clue) {
   return text.replace(clue, `<span class="clue">${clue}</span>`);
 }
 
+function signalWords(clues) {
+  return clues.map((clue) => `<span>${clue} — ${clueTranslations[clue]}</span>`).join(" · ");
+}
+
 function burstConfetti(amount = 24) {
   const layer = document.querySelector("#confetti");
   const colors = ["#ffd85a", "#ff7058", "#46cfa2", "#1747d1", "#8f63e9"];
@@ -245,27 +263,27 @@ function renderIntro() {
 function renderRules() {
   state.screen = 1;
   setTrail(1);
-  setVincent("teacher", "Секрет простой: ищи слово-подсказку и спроси себя — это привычное действие или что-то, что происходит прямо сейчас?", "rule");
+  setVincent("teacher", "Секрет простой: найди слово-подсказку и спроси себя: это обычное, повторяющееся действие или оно происходит прямо сейчас?", "rule");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🔎</span> Винни объясняет</div>
-    <h2>Учимся отличать</h2>
+    <h2>Два времени — «обычно» и «прямо сейчас»</h2>
     <div class="rule-grid">
       <article class="rule-sheet">
         <h3>🔁 Present Simple</h3>
-        <p>Привычки и то, что повторяется.</p>
-        <div class="formula">I play · She plays</div>
-        <div class="signal-words">usually · often · every day</div>
+        <p>Обычное, повторяющееся действие: то, что ты делаешь каждый день, часто, по субботам.</p>
+        <div class="formula">I play · she play<b>s</b><small>он, она, оно → +s</small></div>
+        <div class="signal-words">${signalWords(["usually", "often", "every day"])}</div>
         <div class="example-line"><button class="tiny-audio" type="button" data-track="simpleExample" aria-label="Послушать пример">▶</button> I walk to school every day.</div>
       </article>
       <article class="rule-sheet is-now">
         <h3>⚡ Present Continuous</h3>
-        <p>То, что происходит прямо сейчас.</p>
-        <div class="formula">am / is / are + ing</div>
-        <div class="signal-words">now · Look! · at the moment</div>
+        <p>Действие, которое происходит прямо сейчас, в эту самую минуту.</p>
+        <div class="formula">I am play<b>ing</b> · she is play<b>ing</b><small>am / is / are + …ing</small></div>
+        <div class="signal-words">${signalWords(["now", "Look!", "at the moment"])}</div>
         <div class="example-line"><button class="tiny-audio" type="button" data-track="continuousExample" aria-label="Послушать пример">▶</button> I am walking to school now.</div>
       </article>
     </div>
-    <button class="primary-button" type="button" data-action="choice">Проверить суперсилу</button>
+    <button class="primary-button" type="button" data-action="choice">Попробовать!</button>
   `;
 }
 
@@ -273,13 +291,14 @@ function renderChoice() {
   state.screen = 2;
   setTrail(2);
   const question = choiceQuestions[state.choiceIndex];
-  setVincent("thinking", "Найди слово-подсказку и выбери правильную форму.", "choiceInstruction");
+  setVincent("thinking", "Найди слово-подсказку и выбери, как правильно сказать.", "choiceInstruction");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🎯</span> Быстрый выбор</div>
     <h2>Что подходит?</h2>
     <div class="question-meta"><span>Вопрос ${state.choiceIndex + 1} из ${choiceQuestions.length}</span><span class="streak">🔥 Серия: ${state.streak}</span></div>
     <div class="question-card">
       <p>${highlightClue(question.text, question.clue)}</p>
+      <p class="clue-hint">💡 ${question.clue} — ${clueTranslations[question.clue]}</p>
       <div class="answer-grid">
         ${question.options.map((option) => `<button class="answer-button" type="button" data-answer="${option}">${option}</button>`).join("")}
       </div>
@@ -295,12 +314,12 @@ function renderSort() {
   setVincent("thinking", "Рассортируй слова-подсказки. Нажми на карточку, затем на правильный домик.", "sortInstruction");
   panel.innerHTML = `
     <div class="kicker"><span aria-hidden="true">🧺</span> Сортировка подсказок</div>
-    <h2>Куда отправить фразу?</h2>
-    <p class="sort-instruction">Карточка ${Math.min(state.sortIndex + 1, sortCards.length)} из ${sortCards.length}. Сначала выдели её, потом выбери время.</p>
-    ${card ? `<button class="sort-card" type="button" data-action="select-card">${card.label}</button>` : ""}
+    <h2>В какой домик отправить подсказку?</h2>
+    <p class="sort-instruction">Карточка ${Math.min(state.sortIndex + 1, sortCards.length)} из ${sortCards.length}. Нажми на карточку, потом на домик.</p>
+    ${card ? `<button class="sort-card" type="button" data-action="select-card">${card.label}<small>${clueTranslations[card.label]}</small></button>` : ""}
     <div class="sort-zones">
       <button class="sort-zone" type="button" data-zone="simple">
-        <b>🔁 Present Simple</b><span>обычно, регулярно</span>
+        <b>🔁 Present Simple</b><span>обычно, всегда</span>
         <div class="sorted-list">${state.sorted.simple.map((item) => `<i class="sorted-chip">${item}</i>`).join("")}</div>
       </button>
       <button class="sort-zone" type="button" data-zone="continuous">
@@ -340,10 +359,10 @@ function renderComplete() {
   panel.innerHTML = `
     <div class="result-badge"><div><span>🏅</span><b>Time Tamer</b></div></div>
     <h2>Времена приручены!</h2>
-    <p class="lead">Ты заработала <b>${state.score} из 190 баллов</b>. Главное правило: привычное или повторяющееся действие — Present Simple, действие, которое происходит прямо сейчас — Present Continuous.</p>
+    <p class="lead">Ты заработала <b>${state.score} из 190 баллов</b>. Запомни главное: обычное, повторяющееся действие — Present Simple, действие прямо сейчас — Present Continuous.</p>
     <div class="mini-features">
-      <span>🔁 habits</span>
-      <span>⚡ happening now</span>
+      <span>🔁 обычно</span>
+      <span>⚡ прямо сейчас</span>
       <span>🏆 новая медаль</span>
     </div>
     <div class="result-actions">
@@ -379,8 +398,8 @@ function resolveChoice(button, isFinal = false) {
     button.disabled = true;
     state.streak = 0;
     feedback.className = "feedback bad";
-    feedback.textContent = isFinal ? `Ещё попытка! Смотри на подсказку «${question.clue}».` : question.tip;
-    setVincent("thinking", `Почти! Слово «${question.clue}» подскажет нужное время.`, isFinal ? "finalIntro" : "choiceInstruction");
+    feedback.textContent = isFinal ? `Ещё попытка! «${question.clue}» значит «${clueTranslations[question.clue]}». Обычно или прямо сейчас?` : question.tip;
+    setVincent("thinking", `Почти! Слово «${question.clue}» подскажет ответ: так бывает обычно или прямо сейчас?`, isFinal ? "finalIntro" : "choiceInstruction");
     tone("bad");
     return;
   }
@@ -445,7 +464,7 @@ panel.addEventListener("click", (event) => {
     const card = sortCards[state.sortIndex];
     if (target.dataset.zone !== card.zone) {
       feedback.className = "feedback bad";
-      feedback.textContent = "Проверь: это привычное действие или происходит сейчас?";
+      feedback.textContent = "Подумай: так бывает обычно или это происходит прямо сейчас?";
       tone("bad");
       return;
     }

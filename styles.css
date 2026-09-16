@@ -493,6 +493,10 @@ h2 {
   font-weight: 800;
 }
 
+.signal-words span {
+  white-space: nowrap;
+}
+
 .example-line {
   display: flex;
   align-items: center;
@@ -546,6 +550,29 @@ h2 {
   color: #9b2f22;
   background: #ffe3dc;
   border-radius: 6px;
+}
+
+.question-card .clue-hint {
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.formula small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.sort-card small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.75;
 }
 
 .answer-grid {
