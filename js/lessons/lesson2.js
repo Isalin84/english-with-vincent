@@ -37,7 +37,7 @@ export default {
         tone: "simple",
         html: "Один предмет или одно животное. There is a tree. Там есть дерево. There is a dog. Там есть собака. После there is стоит слово <b>a</b> или <b>an</b>: a tree, a dog, an ice cream. Это подсказка, что предмет один.",
         formula: "There <b>is</b> a tree<small>там есть одно дерево</small>",
-        signal: "<span>a bench — скамейка</span> · <span>a dog — собака</span> · <span>an ice cream — мороженое</span>",
+        signal: "<span>a bench — скамейка</span><span>a dog — собака</span><span>an ice cream — мороженое</span>",
         examples: [{ en: "There is a big tree in the park.", ru: "В парке есть большое дерево.", track: "l2-ex-1" }],
       },
       {
@@ -45,7 +45,7 @@ export default {
         tone: "now",
         html: "Два предмета и больше. There are many flowers. Там много цветов. There are two bikes. Там два велосипеда. Подсказки: слова <b>two, three, many, some</b> и окончание <b>-s</b>: ducks, flowers, bikes.",
         formula: "There <b>are</b> many flowers<small>там много цветов</small>",
-        signal: "<span>two bikes — два велосипеда</span> · <span>many flowers — много цветов</span> · <span>some children — несколько детей</span>",
+        signal: "<span>two bikes — два велосипеда</span><span>many flowers — много цветов</span><span>some children — несколько детей</span>",
         examples: [{ en: "There are many flowers near the pond.", ru: "У пруда много цветов.", track: "l2-ex-2" }],
       },
       {

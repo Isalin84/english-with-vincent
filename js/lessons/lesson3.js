@@ -42,7 +42,7 @@ export default {
         tone: "neutral",
         html: "Тот же a, только перед гласным звуком: an apple, an orange, an umbrella, an egg, an ice cream. Так удобнее говорить. Попробуй сказать «a apple», язык спотыкается.",
         formula: "an apple · an egg · an owl<small>перед a, e, i, o, u</small>",
-        signal: "<span>an apple — яблоко</span> · <span>an orange — апельсин</span> · <span>an umbrella — зонт</span> · <span>an owl — сова</span>",
+        signal: "<span>an apple — яблоко</span><span>an orange — апельсин</span><span>an umbrella — зонт</span><span>an owl — сова</span>",
       },
       {
         title: "🐩 the",

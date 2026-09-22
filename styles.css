@@ -497,6 +497,9 @@ h2 {
 }
 
 .signal-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 800;

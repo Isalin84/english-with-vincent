@@ -17,7 +17,7 @@ const t = {
   "Listen!": "Слушай!",
 };
 
-const signal = (clues) => clues.map((c) => `<span>${c} — ${t[c]}</span>`).join(" · ");
+const signal = (clues) => clues.map((c) => `<span>${c} — ${t[c]}</span>`).join("");
 
 export default {
   id: "tenses",
