@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="English with Vincent — интерактивные уроки английского для Вари. Первый урок: Present Simple и Present Continuous."
+      content="English with Vincent — интерактивная тетрадь по английскому для детей 9–10 лет с пуделем Винни. Четыре урока: времена Present Simple/Continuous, there is/there are, артикли a/an/the и прошедшее время."
     />
     <meta name="theme-color" content="#1747d1" />
     <title>English with Vincent</title>
@@ -25,8 +25,11 @@
         <span>English <em>with</em> Vincent</span>
       </a>
       <div class="player-strip" aria-label="Игровой прогресс">
-        <div class="player-name"><span aria-hidden="true">👧🏻</span> Варя</div>
+        <div class="player-name" id="player-name-button" role="button" tabindex="0" aria-label="Изменить имя">
+          <span aria-hidden="true">🎒</span> <span id="player-name">друг</span>
+        </div>
         <div class="score-pill" aria-live="polite"><span aria-hidden="true">⭐</span> <b id="score">0</b></div>
+        <div class="score-pill total-pill" aria-live="polite"><span aria-hidden="true">🏆</span> <b id="total-score">0</b></div>
         <button class="icon-button" id="sound-toggle" type="button" aria-label="Выключить звук" aria-pressed="true">
           <span aria-hidden="true">🔊</span>
         </button>
@@ -34,21 +37,12 @@
     </header>
 
     <main class="lesson-shell">
-      <nav class="trail" aria-label="Этапы урока">
-        <span class="trail-title">Урок 1</span>
-        <ol id="trail-steps">
-          <li class="is-active"><span>1</span><b>Разминка</b></li>
-          <li><span>2</span><b>Правило</b></li>
-          <li><span>3</span><b>Практика</b></li>
-          <li><span>4</span><b>Финал</b></li>
-        </ol>
-        <div class="best-score">Личный рекорд: <b id="best-score">0</b> ⭐</div>
-      </nav>
+      <nav class="trail" id="trail" aria-label="Этапы урока"></nav>
 
       <section class="game-board" aria-live="polite">
         <div class="vincent-stage">
           <div class="speech" id="speech-bubble">
-            <p id="speech-text">Привет, Варя! Готова отправиться на поиски двух английских времён?</p>
+            <p id="speech-text">Привет! Я Винни.</p>
             <button class="speak-button" id="speak-button" type="button" aria-label="Послушать Винни">
               <span aria-hidden="true">▶</span> Послушать
             </button>
@@ -69,10 +63,10 @@
     </main>
 
     <footer>
-      <span>Сделано специально для Вари</span>
-      <button id="reset-button" type="button">Начать сначала</button>
+      <span>Сделано с любовью для юных учеников</span>
+      <button id="reset-button" type="button">На карту</button>
     </footer>
 
-    <script src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
   </body>
 </html>

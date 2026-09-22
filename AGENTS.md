@@ -1,75 +1,90 @@
 # AGENTS.md — общий контекст для всех агентов проекта
 
-Этот файл читают и OpenAI Codex, и Claude Code (через `CLAUDE.md`). Перед любой работой прочитай его целиком и `tasks/handoff.md`.
+Этот файл читают все агенты, которые работают в репозитории (Claude Code через `CLAUDE.md`, OpenAI Codex автоматически, ChatGPT получает `tasks/illustrations-spec.md`). Перед любой работой прочитай его целиком и `tasks/handoff.md`.
 
 ## Что это
 
-**English with Vincent** — статическая игра для изучения английского. Урок 1: Present Simple vs Present Continuous.
-Ученица — Варя, 9–10 лет, русскоязычная. Проводник — пудель Винни (Vincent).
+**English with Vincent** — статическая тетрадь по английскому для детей 9–10 лет, русскоязычных. Проводник — пудель Винни (Vincent). Первая ученица — Варя, но приложение рассчитано на любого ученика: имя спрашивается при входе, Винни обращается по имени в тексте и «my friend» в озвучке. Учебник в школе — Go Getter 2 (Pearson), уроки 2–4 согласованы с ним.
 
 - Репозиторий: https://github.com/Isalin84/english-with-vincent (ветка `main`)
 - Сайт (GitHub Pages, публикуется из `main` автоматически): https://isalin84.github.io/english-with-vincent/
-- Стек: `index.html` + `app.js` + `styles.css`, без сборки. Локально: `python3 -m http.server 4173` из корня.
-- Файлы `IMG_*.jpeg`, `public/assets/*.png`, `.playwright-mcp/` в `.gitignore` — не коммитить.
+- Стек: `index.html` + `styles.css` + ES-модули в `js/`, без сборки. Локально: `python3 -m http.server 4173` из корня (модули не работают с `file://`).
+- В `.gitignore`: `IMG_*.jpeg` (фото-референсы), `public/assets/*.png` (мастера картинок Винни), `.playwright-mcp/`. Иллюстрации в `public/assets/illustrations/*.png` коммитятся.
+
+## Уроки
+
+| № | id | Тема | Файл |
+|---|---|---|---|
+| 1 | `tenses` | Present Simple vs Present Continuous («обычно» / «прямо сейчас») | `js/lessons/lesson1.js` |
+| 2 | `there-is` | There is / There are, вопрос и отрицание | `js/lessons/lesson2.js` |
+| 3 | `articles` | Артикли a / an / the | `js/lessons/lesson3.js` |
+| 4 | `past` | was / were, there was / there were, could (школьный текст «A day at the park») | `js/lessons/lesson4.js` |
+
+Сквозной сюжет уроков 2–4: воскресная прогулка в парке, Варя с подругами и Винни.
 
 ## Кто что делает
 
 | Агент | Зона ответственности | Инструменты |
 |---|---|---|
-| **OpenAI Codex** (desktop) | Создал проект и опубликовал его. Картинки Винни (генерация изображений, `public/assets/*.webp`). Озвучка через веб-интерфейс ElevenLabs в Chrome пользователя (голос **Archie – Social Media Narrator**, Eleven v3). | Chrome пользователя, ElevenLabs под аккаунтом пользователя |
-| **Claude Code** | Методика преподавания, русские тексты объяснений, ревью кода и UX, документация для агентов. Картинки и озвучку генерировать **не может**. | Встроенный браузер для проверки, субагенты |
+| **Claude Code** | Методика, все тексты (русские объяснения по правилам `humanizer-ru`), данные уроков, движок, ревью, документация. Озвучка через ElevenLabs и звуки с Pixabay через Chrome пользователя (субагенты). Коммиты и публикация. | Chrome пользователя (расширение), встроенный браузер, Playwright, ffmpeg, субагенты |
+| **ChatGPT** | Иллюстрации по `tasks/illustrations-spec.md`: png с прозрачным фоном в `public/assets/illustrations/`. Референсы: `public/assets/vincent-teacher.png`, `IMG_6841.jpeg`. | Генерация изображений |
+| **OpenAI Codex** | Создал проект и первые картинки/озвучку урока 1. Сейчас активных задач нет. Если подключается снова: читать этот файл и `tasks/handoff.md`. | — |
 
 Рабочий цикл для любого агента:
 1. `git pull --ff-only` перед началом (пользователь правит тексты прямо на GitHub).
-2. Работать маленькими коммитами, сообщение — короткий императив по-английски (`Clarify sort hints`).
-3. После работы дописать запись в `tasks/handoff.md` (кто, что, что не трогал, что ожидается от другого агента).
-4. Если задача требует того, чего ты не умеешь (озвучка, картинки, доступ к аккаунтам), оставь в `tasks/handoff.md` конкретное ТЗ для другого агента, а не половинчатое решение.
+2. Маленькие коммиты, сообщение — короткий императив по-английски (`Add lesson 3: articles`).
+3. После работы дописать запись в `tasks/handoff.md`.
+4. Если задача требует того, чего ты не умеешь, оставь в `tasks/handoff.md` конкретное ТЗ, а не половинчатое решение.
 
-## Аудио: что реально записано
+## Устройство приложения
 
-Русский текст в облачке Винни на экране **не является транскриптом** аудио. Это перевод-пояснение. Записанный текст ниже. Все дорожки, кроме `vincent-intro.mp3`, на английском.
+```
+index.html                 оболочка: шапка (имя, ⭐ счёт урока, 🏆 всего, звук), сцена Винни, #activity-panel
+styles.css
+js/app.js                  вход: профиль, роутер экранов, делегированный click
+js/engine/state.js         профиль в localStorage «vincent-profile»: имя, лучшие результаты по урокам, звук
+js/engine/audio.js         speak(track) → public/audio/<track>.mp3; sfx(name) → public/sfx/<name>.mp3, запасной синтез WebAudio
+js/engine/vincent.js       облачко (en + ru), похвала / подбадривание RU и EN по очереди
+js/engine/check.js         проверка введённого текста: нормализация, Левенштейн ≤ 2 → «Почти! Проверь написание»
+js/engine/exercises.js     5 типов упражнений: choice, type, sort, build, story
+js/engine/illustrations.js картинка по id с запасным эмодзи
+js/lessons/index.js        список уроков, lessonMaxScore / lessonTaskCount (считаются из данных)
+js/lessons/images.js       реестр иллюстраций (id → emoji, alt)
+js/lessons/lesson*.js      только данные
+tools/split-audio.mjs      режет пакетную запись ElevenLabs на дорожки по паузам
+tasks/audio-spec.md        все фразы Винни и звуки; tasks/illustrations-spec.md — ТЗ на картинки
+```
 
-| Ключ в `voiceTracks` | Файл | Язык | Записанный текст |
-|---|---|---|---|
-| intro | vincent-intro.mp3 | RU | Привет, Варя! Готова к маленькому путешествию во времени? Сегодня мы приручим два английских времени. А дальше я буду говорить с тобой по-английски — слушай внимательно и повторяй за мной, чтобы тренировать произношение. Не волнуйся, я буду помогать! |
-| rule | vincent-rule.mp3 | EN | Here's the trick: find the clue. Is it a habit, or is it happening right now? |
-| simpleExample | simple-example.mp3 | EN | I walk to school every day. |
-| continuousExample | continuous-example.mp3 | EN | I am walking to school now. |
-| choiceInstruction | choice-instruction.mp3 | EN | Spot the clue, then choose the form that sounds right. |
-| choice1 | choice-1.mp3 | EN | Varya usually does her homework after school. |
-| choice2 | choice-2.mp3 | EN | Look! Vincent is running after a butterfly. |
-| choice3 | choice-3.mp3 | EN | My dad drinks tea every morning. |
-| choice4 | choice-4.mp3 | EN | Listen! The baby is crying right now. |
-| sortInstruction | sort-instruction.mp3 | EN | Sort the clues. Tap a card, then send it to its tense. |
-| finalIntro | final-intro.mp3 | EN | Final round! Every answer is worth fifteen points. Let's go! |
-| final1 | final-1.mp3 | EN | I brush my teeth every day. |
-| final2 | final-2.mp3 | EN | Vincent is sleeping on the sofa now. |
-| final3 | final-3.mp3 | EN | She usually goes to school at eight. |
-| final4 | final-4.mp3 | EN | We are learning English at the moment. |
-| final5 | final-5.mp3 | EN | They play football on Sundays. |
-| final6 | final-6.mp3 | EN | Listen! Mum is talking on the phone. |
-| complete | vincent-complete.mp3 | EN | Amazing work, Varya! You've tamed Present Simple and Present Continuous. High paw! |
+Схема урока: `{ id, number, title, grammar, emoji, cover, minutes, badge, intro, rule, stages[], complete }`. Этап: `{ id, kind, kicker, title, trail, bubble{en,ru}, track, wrongBubble?, points, items | cards+zones | text+gaps }`. Правила очков: первая попытка — `points`, вторая — половина, после второй ошибки ответ показывается и даётся 0. Максимум урока считается из данных, в текстах числа не дублировать.
+
+Инварианты данных (проверяются скриптом перед коммитом):
+- `choice`: `answer` входит в `options`, в `text` есть `___`; если есть `clue`, он буквально встречается в `text`.
+- `type`: `answer` (и `alt`) — то, что ребёнок должен напечатать; `hint` короткий и по-русски.
+- `sort`: у каждой карточки `zone` из списка `zones`.
+- `build`: `answer` — готовое предложение с пунктуацией, `extra` — 1 лишнее слово.
+- `story`: гапы `{{1}}…{{n}}` идут по порядку, `answer` каждого входит в `options`; `—` значит «без слова».
+- `image` — id из `images.js`; `track` — имя файла без `.mp3`.
+
+## Аудио
+
+Русский текст в облачке **не транскрипт**. Что реально звучит: поле `bubble.en` (для реплик Винни) и `text` с подставленным `answer` (для предложений). Полный список фраз и правила записи — `tasks/audio-spec.md`. Голос **Archie – Social Media Narrator**, Eleven v3; русские фразы («Молодец!», intro урока 1) намеренно с английским акцентом.
 
 Правила:
-- Русские строки в `app.js` можно менять свободно, звук от этого не ломается.
-- Текст intro в `renderIntro` менять нельзя без перезаписи `vincent-intro.mp3` (только Codex).
-- Новый вопрос = новая дорожка тем же голосом Archie, ключ в `voiceTracks`, поле `track` у вопроса. Без дорожки вопрос не добавлять.
+- Русские строки (`bubble.ru`, `tip`, `hint`, объяснения) можно менять свободно.
+- Менять `bubble.en` или английское предложение задания = перезаписать дорожку.
+- Новое задание с `track` без файла — допустимо (движок молча пропускает отсутствующий файл), но запись должна быть добавлена в `tasks/audio-spec.md` и в очередь на озвучку.
 
-## Методика: как объясняем времена ребёнку
+## Методика
 
-Одна идея через весь урок. Два уровня формулировок:
+Общий принцип: одна идея на урок, объяснение через конкретные слова-якоря, а не через термины. Русский текст пишется живым языком по правилам `humanizer-ru`: без канцелярита, без «не просто…, а…», без риторических вопросов (прямые вопросы ребёнку «один или много?» допустимы, это приём).
 
-1. **Полное определение** — только там, где ребёнок учит правило и подводит итог (экраны «Правило» и «Итог»):
-   - Present Simple = *обычное, повторяющееся действие* (то, что делаешь каждый день, часто, по субботам).
-   - Present Continuous = *действие, которое происходит прямо сейчас, в эту самую минуту*.
-2. **Короткий якорь** — во всех подсказках, фидбэках, зонах сортировки, чипах: **«обычно»** ↔ Present Simple, **«прямо сейчас»** ↔ Present Continuous. Вопрос ребёнку везде один: «так бывает обычно или это происходит прямо сейчас?». В подсказке после ошибки связка проговаривается: «Действие повторяется, значит Present Simple».
+- **Урок 1.** Полное определение («обычное, повторяющееся действие» / «действие, которое происходит прямо сейчас») только на «Правиле» и «Итоге»; везде ещё — якоря **«обычно»** / **«прямо сейчас»**. Запрещены: голое «привычка», «регулярно», «форма (глагола)», английские `habit(s)`, `happening now`. Зоны сортировки называем «домик». Слова-подсказки с переводом в правиле и практике, в финале — только после ошибки (`clueTranslations` в `lesson1.js`).
+- **Урок 2.** Якорь: «один — is, много — are». Смотрим на слово сразу после there is/are; подсказки: a/an → один; two, three, many, some, окончание -s → много.
+- **Урок 3.** Два вопроса по порядку: «первый раз или тот самый?» (a/an или the), затем «гласный звук?» (an). Много предметов — без a/an. Не вводим исключения (hour, university).
+- **Урок 4.** «Был» = was/were, то же правило «один/много»; you всегда were; could «не меняется никогда».
 
-Запрещено в русском тексте: голое слово «привычка», «регулярно», «форма (глагола)», английские `habit(s)`, `happening now`. Слово «время» как грамматический термин допустимо, но в инструкциях к кнопкам используем «домик» (зоны сортировки), чтобы не путать со временем на часах.
+Обращения к ученику без рода: «твой результат», «дай лапу», а не «ты заработала». Имя подставляется через `{name}`.
 
-Слова-подсказки (usually, every day, Look!…) всегда показываются с переводом на экранах «Правило», «Быстрый выбор» и «Сортировка». В финале перевод появляется только после ошибки. Единственный источник переводов — объект `clueTranslations` в `app.js`; новое слово-подсказка сначала добавляется туда.
+## Инварианты урока 1 (историческое)
 
-## Инварианты игры
-
-- 16 заданий: 4 (выбор) + 6 (сортировка) + 6 (финал). Баллы: 4×10 + 6×10 + 6×15 = 190. Эти числа продублированы текстом на экране intro и итога — при изменении править везде.
-- `clue` каждого вопроса должен буквально встречаться в его `text` (так работает подсветка `highlightClue`).
-- Обращение к ученице в женском роде («ты заработала»).
+16 заданий (4 + 6 + 6), 190 баллов (4×10 + 6×10 + 6×15). Аудио урока 1 (16 дорожек, кроме `vincent-intro` и `vincent-complete`) записано в первой версии проекта и не перезаписывается.
